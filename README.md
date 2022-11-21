@@ -28,7 +28,7 @@ result <- matrix(NA, nrow=3, ncol=4)
 
 for(i in 1:3){\
 &nbsp;&nbsp;&nbsp; set.seed(1)\
-&nbsp;&nbsp;&nbsp; STERGM_list <- sim_STERGM_batch(num_nets=10, n=num_node[i], network_stats, coefs_pos, coefs_neg, y1_stats=y1_target[i], node_attr=NA)\
+&nbsp;&nbsp;&nbsp; STERGM_list <- sim_STERGM_batch(num_nets=10, n=num_node[i], network_stats, coefs_pos, coefs_neg, y1_stats=y1_target[i])\
 &nbsp;&nbsp;&nbsp; sim_result <- CPD_STERGM_batch(STERGM_list, network_stats)\
 &nbsp;&nbsp;&nbsp; esult[i,] <- colMeans(sim_result)\
 }
