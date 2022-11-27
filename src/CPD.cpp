@@ -259,9 +259,9 @@ arma::mat z_learning(int learning_iter, arma::mat theta_mat, arma::mat z_mat, ar
 
 
 // [[Rcpp::export]]
-List CPD_STERGM(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
-                arma::mat theta_mat, arma::mat z_mat, arma::mat u_mat, arma::mat X_mat, arma::vec d_vec,
-                double alpha, int tau, int p1, int p2, double lambda, double theta_tol, double ADMM_tol){
+List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
+                    arma::mat theta_mat, arma::mat z_mat, arma::mat u_mat, arma::mat X_mat, arma::vec d_vec,
+                    double alpha, int tau, int p1, int p2, double lambda, double theta_tol, double ADMM_tol, bool verbose){
 
   Rcpp::Rcout.precision(15);
   int p = p1+p2;
@@ -275,20 +275,20 @@ List CPD_STERGM(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, List
   old_log_lik = arma::datum::inf;
 
   for(int iter = 0; iter < ADMM_iter; ++iter){
-    Rcout << "ADMM iter = " << iter+1 << "\n";
+    if(verbose){Rcout << "ADMM iter = " << iter+1 << "\n";}
 
     theta_mat = theta_learning(theta_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, z_mat, u_mat, alpha, tau, p1, p2, theta_tol);
-    Rcout << "    theta updated" << "\n";
+    if(verbose){Rcout << "    theta updated" << "\n";}
 
     z_mat_old = z_mat;
     z_mat = z_learning(z_iter, theta_mat, z_mat, u_mat, X_mat, d_vec, alpha, tau, p1, p2, lambda);
-    Rcout << "    z updated" << "\n";
+    if(verbose){Rcout << "    z updated" << "\n";}
 
     dual_residual = z_mat - z_mat_old;
     primal_residual = theta_mat - z_mat;
 
     u_mat += primal_residual; // End of u_mat learning
-    Rcout << "    u updated" << "\n";
+    if(verbose){Rcout << "    u updated" << "\n";}
 
     dual_residual.reshape(tau*p, 1);
     primal_residual.reshape(tau*p, 1);
@@ -297,11 +297,13 @@ List CPD_STERGM(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, List
     log_lik = cal_log_likelihood(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2);
     converged = max(dual_resnorm, primal_resnorm);
 
-    Rcout << "        primal_resnorm = " << primal_resnorm << "\n";
-    Rcout << "        dual_resnorm = " << dual_resnorm << "\n";
-    Rcout << "        converged = " << converged << "\n";
-    Rcout << "        log_lik = " << log_lik << "\n";
-    Rcout << "        tol = " << abs( (log_lik-old_log_lik)/old_log_lik ) << "\n";
+    if(verbose){
+      Rcout << "        primal_resnorm = " << primal_resnorm << "\n";
+      Rcout << "        dual_resnorm = " << dual_resnorm << "\n";
+      Rcout << "        converged = " << converged << "\n";
+      Rcout << "        log_lik = " << log_lik << "\n";
+      Rcout << "        tol = " << abs( (log_lik-old_log_lik)/old_log_lik ) << "\n";
+    }
 
 
     if( abs( (log_lik-old_log_lik)/old_log_lik ) < ADMM_tol ){s="Save";break;}
@@ -310,11 +312,11 @@ List CPD_STERGM(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, List
     if(primal_resnorm > dual_resnorm * 10){
       alpha *= 2;
       u_mat /= 2;
-      Rcout << "        ---alpha is increased to " << alpha << "\n";
+      if(verbose){Rcout << "        ---alpha is increased to " << alpha << "\n";}
     }else if(dual_resnorm > primal_resnorm * 10){
       alpha /= 2;
       u_mat *= 2;
-      Rcout << "        ---alpha is decreased to " << alpha << "\n";
+      if(verbose){Rcout << "        ---alpha is decreased to " << alpha << "\n";}
     }
 
     old_log_lik = log_lik;
