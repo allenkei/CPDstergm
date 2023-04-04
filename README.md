@@ -4,7 +4,7 @@ Yik Lun Kei\*, Hangjian Li\*, Yanzhen Chen, Oscar Hernan Madrid Padilla\
 [PDF](https://arxiv.org/pdf/2303.17642.pdf)
 
 
-# install the package
+# Install the package
 library(devtools)\
 install_github("allenkei/CPDstergm")\
 library(CPDstergm)
