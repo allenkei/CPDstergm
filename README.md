@@ -1,4 +1,4 @@
-# R package
+# R package: CPDstergm
 This package detects multiple change points simultaneously in a sequence of temporal and dyadic dependent networks, under the Separable Temporal Exponential-family Random Graph Model.
 
 # The paper
