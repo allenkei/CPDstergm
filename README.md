@@ -1,3 +1,6 @@
+# R package
+This package detects multiple change points simultaneously in a sequence of temporal and dyadic dependent networks, under the Separable Temporal Exponential-family Random Graph Model.
+
 # The paper:
 Change Point Detection on a Separable Model for Dynamic Networks\
 Yik Lun Kei\*, Hangjian Li\*, Yanzhen Chen, Oscar Hernan Madrid Padilla\
