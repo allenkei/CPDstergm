@@ -11,5 +11,6 @@ library(devtools)\
 install_github("allenkei/CPDstergm")\
 library(CPDstergm)
 
+# Demonstration
 The code to reproduce the results in the paper can be found at:
 https://github.com/allenkei/CPDstergm_demo
