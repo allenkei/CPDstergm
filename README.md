@@ -5,7 +5,7 @@ This package detects multiple change points simultaneously in a sequence of temp
 Change Point Detection on a Separable Model for Dynamic Networks\
 Yik Lun Kei\*, Hangjian Li\*, Yanzhen Chen, Oscar Hernan Madrid Padilla\
 [PDF](https://arxiv.org/pdf/2303.17642.pdf)\
-* denotes equal contribution
+\* denotes equal contribution
 
 # Install the package
 library(devtools)\
