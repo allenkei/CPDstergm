@@ -591,7 +591,7 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 #' @param threshold_alpha The alpha level for the data-driven threshold to declare the change points
 #' @param verbose If it is TRUE, the information at each ADMM iteration is printed.
 #'
-#' @return Returns a list of results including (1) estimated change points, (2) BIC value, (3) sequential parameter change after standardization or \eqn{\Delta \hat{\bm{\zeta}}}, (4) data-driven threshold to declare the change points, and (5) the learned parameters \eqn{\bm{\theta}}.
+#' @return Returns a list of results including estimated change points, selected lambda, BIC value, sequential parameter change after standardization \eqn{\Delta \hat{\bm{\zeta}}}, (5) data-driven threshold to declare the change points, and the learned parameters \eqn{\bm{\theta}}.
 #' @export
 #'
 #' @examples
