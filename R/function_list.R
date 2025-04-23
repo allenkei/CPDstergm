@@ -298,21 +298,14 @@ save_H_y_list <- function(y_data, directed, network_stats, node_attr=NA){
 
 Evaluation_ADMM_list <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
                                  theta_mat, tau, p1, p2, p, n, true_CP){
-  log_lik <- 0
-  for(iter in 1:tau){
-    theta_g_pos <- H_pos_list[[iter]] %*% theta_mat[iter,1:p1]
-    theta_g_neg <- H_neg_list[[iter]] %*% theta_mat[iter,(p1+1):p]
-    log_lik <- log_lik + sum(y_pos_list[[iter]] * theta_g_pos - log(1 + exp(theta_g_pos))) # element-wise
-    log_lik <- log_lik + sum(y_neg_list[[iter]] * theta_g_neg - log(1 + exp(theta_g_neg)))
-  }
+
+  log_lik <- cal_log_likelihood(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
 
   theta_change <- numeric(tau-1)
   for(i in 1:(tau-1)){theta_change[i] <- norm(theta_mat[i+1,]-theta_mat[i,],"2")}
   t_change <- (theta_change - median(theta_change))/sd(theta_change) # use median
   threshold <- mean(t_change) + qnorm(0.9, lower.tail = T) * sd(t_change) # use mean
   theta_change <- t_change
-
-  #plot(1:(tau-1), theta_change, type='b');abline(h = threshold)
 
   est_CP <- c()
   for(i in 1:(tau-1)){
@@ -416,14 +409,6 @@ Evaluation_ADMM_list <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
 Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
                             theta_mat, tau, p1, p2, p, n, directed, threshold_alpha){
   output <- list()
-
-  #log_lik <- 0
-  #for(iter in 1:tau){
-  #  theta_g_pos <- H_pos_list[[iter]] %*% theta_mat[iter,1:p1]
-  #  theta_g_neg <- H_neg_list[[iter]] %*% theta_mat[iter,(p1+1):p]
-  #  log_lik <- log_lik + sum(y_pos_list[[iter]] * theta_g_pos - log(1 + exp(theta_g_pos))) # element-wise
-  #  log_lik <- log_lik + sum(y_neg_list[[iter]] * theta_g_neg - log(1 + exp(theta_g_neg)))
-  #}
 
   log_lik <- cal_log_likelihood(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
 
@@ -594,7 +579,7 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 #' @param threshold_alpha The alpha level for the data-driven threshold to declare the change points
 #' @param verbose If it is TRUE, the information at each ADMM iteration is printed.
 #'
-#' @return Returns a list of results including estimated change points, selected lambda, BIC value, sequential parameter change after standardization \eqn{\Delta \hat{\bm{\zeta}}}, data-driven threshold to declare the change points, and the learned parameters \eqn{\bm{\theta}}.
+#' @return Returns a list of results including detected change points, selected lambda, BIC value, log-likelihood, sequential parameter change after standardization \eqn{\Delta \hat{\bm{\zeta}}}, data-driven threshold to declare the change points, and the learned parameters \eqn{\bm{\theta}}.
 #' @export
 #'
 #' @examples

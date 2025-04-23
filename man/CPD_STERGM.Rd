@@ -45,14 +45,14 @@ CPD_STERGM(
 \item{verbose}{If it is TRUE, the information at each ADMM iteration is printed.}
 }
 \value{
-Returns a list of results including (1) estimated change points, (2) BIC value, (3) sequential parameter change after standardization or \eqn{\Delta \hat{\bm{\zeta}}}, (4) data-driven threshold to declare the change points, and (5) the learned parameters \eqn{\bm{\theta}}.
+Returns a list of results including detected change points, selected lambda, BIC value, log-likelihood, sequential parameter change after standardization \eqn{\Delta \hat{\bm{\zeta}}}, data-driven threshold to declare the change points, and the learned parameters \eqn{\bm{\theta}}.
 }
 \description{
 This function detects the change points for a sequence of dynamic networks
 }
 \examples{
 library(ecp)
-data(DJIA) # data from ecp package
+data(DJIA)
 market <- DJIA$market
 date_vec <- DJIA$dates[1:1138]
 rownames(market) <- date_vec
