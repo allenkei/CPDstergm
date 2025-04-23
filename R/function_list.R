@@ -417,13 +417,13 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
                             theta_mat, tau, p1, p2, p, n, directed, threshold_alpha){
   output <- list()
 
-  log_lik <- 0
-  for(iter in 1:tau){
-    theta_g_pos <- H_pos_list[[iter]] %*% theta_mat[iter,1:p1]
-    theta_g_neg <- H_neg_list[[iter]] %*% theta_mat[iter,(p1+1):p]
-    log_lik <- log_lik + sum(y_pos_list[[iter]] * theta_g_pos - log(1 + exp(theta_g_pos))) # element-wise
-    log_lik <- log_lik + sum(y_neg_list[[iter]] * theta_g_neg - log(1 + exp(theta_g_neg)))
-  }
+  #log_lik <- 0
+  #for(iter in 1:tau){
+  #  theta_g_pos <- H_pos_list[[iter]] %*% theta_mat[iter,1:p1]
+  #  theta_g_neg <- H_neg_list[[iter]] %*% theta_mat[iter,(p1+1):p]
+  #  log_lik <- log_lik + sum(y_pos_list[[iter]] * theta_g_pos - log(1 + exp(theta_g_pos))) # element-wise
+  #  log_lik <- log_lik + sum(y_neg_list[[iter]] * theta_g_neg - log(1 + exp(theta_g_neg)))
+  #}
 
   log_lik_temp <- cal_log_likelihood(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
 
