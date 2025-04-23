@@ -661,6 +661,7 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
   if( sum(is.na(BIC_vec)) < length(list_of_lambda) ){
     index_min_BIC <- which.min(BIC_vec)
     output_list$est_CP <- temp[[index_min_BIC]][[2]][[1]]       # est_CP
+    output_list$lambda <- list_of_lambda[index_min_BIC]         # selected lambda
     output_list$BIC <- temp[[index_min_BIC]][[2]][[2]]          # BIC value
     output_list$theta_change <- temp[[index_min_BIC]][[2]][[3]] # theta_change
     output_list$threshold <- temp[[index_min_BIC]][[2]][[4]]    # threshold
