@@ -139,6 +139,8 @@ arma::mat cal_Hessian(List H_pos_list, List H_neg_list, List y_pos_list, List y_
     hessian.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) = as<arma::mat>(H_neg_list[iter]).t() * diagmat(temp_neg) * as<arma::mat>(H_neg_list[iter]);
     // (p1 by E) * (E by E) * (E by p1) = (p1 by p1)
     // (p2 by E) * (E by E) * (E by p2) = (p2 by p2)
+    // there is NO negative sign here
+    // this is the second-order derivative of the NEGATIVE log joint likelihood!
 
   }
 
@@ -169,6 +171,8 @@ arma::mat theta_learning(int learning_iter, List H_pos_list, List H_neg_list, Li
     Hess = cal_Hessian(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, alpha, tau, p1, p2);
     theta_vec -= arma::solve(Hess,arma::eye<arma::mat>(tau*p,tau*p)) * Grad;
     theta_mat = vec_to_mat(theta_vec, tau, p);
+
+    // for minimization: theta^{k+1} = theta^{k} - Hessian^{-1} * Gradient
 
     // residual = theta_vec - theta_vec_old;
     resnorm = norm(theta_vec - theta_vec_old, 2);
@@ -406,7 +410,7 @@ arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List
     // (p1 by E) * (E by E) * (E by p1) = (p1 by p1)
     // (p2 by E) * (E by E) * (E by p2) = (p2 by p2)
     // there is a NEGATIVE sign here
-    // it is the hessian of log joint likelihood (NOT negative log joint likelihood!)
+    // it is the second-order derivative of log joint likelihood (NOT negative log joint likelihood!)
 
   }
 
