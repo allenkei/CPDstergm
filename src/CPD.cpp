@@ -340,3 +340,74 @@ List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, 
 }
 
 
+
+////////////////////
+// standard error //
+////////////////////
+
+arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
+                          arma::mat theta_mat, arma::mat z_mat, arma::mat u_mat, double alpha, int tau, int p1, int p2){
+
+  // tau is num_time-1
+  // H_pos_list[iter] is (E by p1) and H_neg_list[iter] is (E by p2)
+  // theta_mat is (tau by p)
+  int p = p1+p2;
+  arma::vec mu_pos, mu_neg, y_mu_pos, y_mu_neg; // (E by 1)
+  arma::vec gradient; // (tau p by 1)
+
+  gradient.zeros(tau*p); // gradient is (tau p by 1)
+
+  for(int iter = 0; iter < tau; ++iter){
+
+    mu_pos = sigmoid(as<arma::mat>(H_pos_list[iter]) * theta_mat.submat(iter,0,iter,p1-1).t()); // (E by p1) * (p1 by 1) = (E by 1)
+    mu_neg = sigmoid(as<arma::mat>(H_neg_list[iter]) * theta_mat.submat(iter,p1,iter,p-1).t()); // (E by p2) * (p2 by 1) = (E by 1)
+    // * is matrix multiplication
+
+    y_mu_pos = as<arma::vec>(y_pos_list[iter]) - mu_pos; // (E by 1) - (E by 1) = (E by 1)
+    y_mu_neg = as<arma::vec>(y_neg_list[iter]) - mu_neg; // (E by 1) - (E by 1) = (E by 1)
+
+    gradient.subvec(iter*p, iter*p+p1-1) = -as<arma::mat>(H_pos_list[iter]).t() * y_mu_pos;       // (p1 by E) * (E by 1)  = (p1 by 1)
+    gradient.subvec(iter*p+p1, iter*p+p1+p2-1) = -as<arma::mat>(H_neg_list[iter]).t() * y_mu_neg; // (p2 by E) * (E by 1)  = (p2 by 1)
+    // copy to corresponding positions for each p1 and p2
+    // there is a NEGATIVE sign here
+  }
+
+  return gradient;
+
+}
+
+
+arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat,
+                         double alpha, int tau, int p1, int p2){
+
+  // tau is num_time-1
+  // H_pos_list[iter] is (E by p1) and H_neg_list[iter] is (E by p2)
+  // theta_mat is (tau by p)
+  int p = p1+p2;
+  arma::mat hessian;
+  arma::vec mu_pos, mu_neg;
+  arma::vec temp_pos, temp_neg;
+
+  hessian.zeros(tau*p,tau*p);
+
+  for(int iter = 0; iter < tau; ++iter){
+
+    mu_pos = sigmoid(as<arma::mat>(H_pos_list[iter]) * theta_mat.submat(iter,0,iter,p1-1).t()); // (E by p1) * (p1 by 1) = (E by 1)
+    mu_neg = sigmoid(as<arma::mat>(H_neg_list[iter]) * theta_mat.submat(iter,p1,iter,p-1).t()); // (E by p2) * (p2 by 1) = (E by 1)
+
+    temp_pos = mu_pos % (1-mu_pos); // (E by 1)
+    temp_neg = mu_neg % (1-mu_neg); // (E by 1)
+    // % is element-wise multiplication
+
+    hessian.submat(iter*p, iter*p, iter*p+p1-1, iter*p+p1-1) = as<arma::mat>(H_pos_list[iter]).t() * diagmat(temp_pos) * as<arma::mat>(H_pos_list[iter]);
+    hessian.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) = as<arma::mat>(H_neg_list[iter]).t() * diagmat(temp_neg) * as<arma::mat>(H_neg_list[iter]);
+    // (p1 by E) * (E by E) * (E by p1) = (p1 by p1)
+    // (p2 by E) * (E by E) * (E by p2) = (p2 by p2)
+
+  }
+
+  return hessian;
+
+}
+
+
