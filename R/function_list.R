@@ -425,7 +425,7 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   #  log_lik <- log_lik + sum(y_neg_list[[iter]] * theta_g_neg - log(1 + exp(theta_g_neg)))
   #}
 
-  log_lik_temp <- cal_log_likelihood(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+  log_lik <- cal_log_likelihood(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
 
   theta_change <- numeric(tau-1)
   for(i in 1:(tau-1)){theta_change[i] <- norm(theta_mat[i+1,]-theta_mat[i,],"2")}
@@ -472,7 +472,7 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   output[[2]] <- BIC
   output[[3]] <- theta_change
   output[[4]] <- threshold
-  output[[5]] <- log_lik_temp
+  output[[5]] <- log_lik
 
   return(output)
 }
