@@ -367,10 +367,11 @@ arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, Lis
     y_mu_pos = as<arma::vec>(y_pos_list[iter]) - mu_pos; // (E by 1) - (E by 1) = (E by 1)
     y_mu_neg = as<arma::vec>(y_neg_list[iter]) - mu_neg; // (E by 1) - (E by 1) = (E by 1)
 
-    gradient.subvec(iter*p, iter*p+p1-1) = -as<arma::mat>(H_pos_list[iter]).t() * y_mu_pos;       // (p1 by E) * (E by 1)  = (p1 by 1)
-    gradient.subvec(iter*p+p1, iter*p+p1+p2-1) = -as<arma::mat>(H_neg_list[iter]).t() * y_mu_neg; // (p2 by E) * (E by 1)  = (p2 by 1)
+    gradient.subvec(iter*p, iter*p+p1-1) = as<arma::mat>(H_pos_list[iter]).t() * y_mu_pos;       // (p1 by E) * (E by 1)  = (p1 by 1)
+    gradient.subvec(iter*p+p1, iter*p+p1+p2-1) = as<arma::mat>(H_neg_list[iter]).t() * y_mu_neg; // (p2 by E) * (E by 1)  = (p2 by 1)
     // copy to corresponding positions for each p1 and p2
-    // there is a NEGATIVE sign here
+    // there is NO negative sign here
+    // it is the gradient of log joint likelihood (NOT negative log joint likelihood!)
   }
 
   return gradient;
@@ -400,10 +401,12 @@ arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List
     temp_neg = mu_neg % (1-mu_neg); // (E by 1)
     // % is element-wise multiplication
 
-    hessian.submat(iter*p, iter*p, iter*p+p1-1, iter*p+p1-1) = as<arma::mat>(H_pos_list[iter]).t() * diagmat(temp_pos) * as<arma::mat>(H_pos_list[iter]);
-    hessian.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) = as<arma::mat>(H_neg_list[iter]).t() * diagmat(temp_neg) * as<arma::mat>(H_neg_list[iter]);
+    hessian.submat(iter*p, iter*p, iter*p+p1-1, iter*p+p1-1) = -as<arma::mat>(H_pos_list[iter]).t() * diagmat(temp_pos) * as<arma::mat>(H_pos_list[iter]);
+    hessian.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) = -as<arma::mat>(H_neg_list[iter]).t() * diagmat(temp_neg) * as<arma::mat>(H_neg_list[iter]);
     // (p1 by E) * (E by E) * (E by p1) = (p1 by p1)
     // (p2 by E) * (E by E) * (E by p2) = (p2 by p2)
+    // there is a NEGATIVE sign here
+    // it is the hessian of log joint likelihood (NOT negative log joint likelihood!)
 
   }
 
