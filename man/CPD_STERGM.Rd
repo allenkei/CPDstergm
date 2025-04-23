@@ -52,7 +52,7 @@ This function detects the change points for a sequence of dynamic networks
 }
 \examples{
 library(ecp)
-data(DJIA)
+data(DJIA) # data from ecp package
 market <- DJIA$market
 date_vec <- DJIA$dates[1:1138]
 rownames(market) <- date_vec
