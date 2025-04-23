@@ -664,3 +664,45 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 }
 
 
+
+
+
+
+
+
+
+
+
+
+#' Calculate standard error (SE)
+#' @description This function calculates the standard error
+#' @param y_data The sequence of dynamic networks
+#' @param network_stats The network statistics for both formation and dissolution models. See search.ergmTerms() for a comprehensive list from the library(ergm).
+#'
+#' @return Returns a list of results
+#' @export
+#'
+#' @examples
+#' library(CPDstergm)
+cal_SE <- function(y_data, directed, network_stats, node_attr=NA, theta_mat){
+
+  output <- list()
+  p1 <- p2 <- length(network_stats); p <- p1+p2
+
+  input_data <- save_H_y_list(y_data, directed, network_stats, node_attr)
+  H_pos_list <- input_data[[1]]
+  H_neg_list <- input_data[[2]]
+  y_pos_list <- input_data[[3]]
+  y_neg_list <- input_data[[4]]
+
+  n <- dim(y_data[[1]])[1]
+  tau <- length(y_data)-1
+
+  score <- cal_Gradient_SE(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+  hessian <- cal_Hessian_SE(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+
+  output$score <- score
+  output$hessian <- hessian
+
+  return(output)
+}

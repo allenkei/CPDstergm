@@ -9,3 +9,11 @@ CPD_STERGM_cpp <- function(ADMM_iter, theta_iter, z_iter, H_pos_list, H_neg_list
     .Call(`_CPDstergm_CPD_STERGM_cpp`, ADMM_iter, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, z_mat, u_mat, X_mat, d_vec, alpha, tau, p1, p2, lambda, theta_tol, ADMM_tol, verbose)
 }
 
+cal_Gradient_SE <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2) {
+    .Call(`_CPDstergm_cal_Gradient_SE`, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+}
+
+cal_Hessian_SE <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2) {
+    .Call(`_CPDstergm_cal_Hessian_SE`, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+}
+

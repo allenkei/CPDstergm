@@ -345,8 +345,9 @@ List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, 
 // standard error //
 ////////////////////
 
+// [[Rcpp::export]]
 arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
-                          arma::mat theta_mat, arma::mat z_mat, arma::mat u_mat, double alpha, int tau, int p1, int p2){
+                          arma::mat theta_mat, int tau, int p1, int p2){
 
   // tau is num_time-1
   // H_pos_list[iter] is (E by p1) and H_neg_list[iter] is (E by p2)
@@ -376,9 +377,9 @@ arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, Lis
 
 }
 
-
-arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat,
-                         double alpha, int tau, int p1, int p2){
+// [[Rcpp::export]]
+arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
+                         arma::mat theta_mat, int tau, int p1, int p2){
 
   // tau is num_time-1
   // H_pos_list[iter] is (E by p1) and H_neg_list[iter] is (E by p2)

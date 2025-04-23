@@ -2,6 +2,7 @@
 
 export(CPD_STERGM)
 export(CPD_STERGM_list)
+export(cal_SE)
 export(save_H_y_list)
 export(sim_SBM_list)
 export(sim_STERGM_list)
