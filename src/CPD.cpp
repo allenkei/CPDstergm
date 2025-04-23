@@ -51,7 +51,7 @@ arma::mat z_from_beta_gamma(List beta_gamma_list, int tau, arma::mat X_mat){
   return output;
 }
 
-
+// [[Rcpp::export]]
 double cal_log_likelihood(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat, int tau, int p1, int p2){
 
   double log_likelihood = 0;
