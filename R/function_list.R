@@ -684,6 +684,7 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 #'
 #' @examples
 #' library(CPDstergm)
+#'
 cal_SE <- function(y_data, directed, network_stats, node_attr=NA, theta_mat){
 
   output <- list()

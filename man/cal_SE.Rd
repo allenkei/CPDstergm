@@ -19,4 +19,5 @@ This function calculates the standard error
 }
 \examples{
 library(CPDstergm)
+
 }
