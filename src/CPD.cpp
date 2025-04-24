@@ -104,6 +104,7 @@ arma::vec cal_Gradient(List H_pos_list, List H_neg_list, List y_pos_list, List y
     gradient.subvec(iter*p+p1, iter*p+p1+p2-1) = -as<arma::mat>(H_neg_list[iter]).t() * y_mu_neg; // (p2 by E) * (E by 1)  = (p2 by 1)
     // copy to corresponding positions for each p1 and p2
     // there is a NEGATIVE sign here
+    // this is the first-order derivative of the NEGATIVE log joint likelihood!
   }
 
   gradient += alpha * (theta_mat.t().as_col() - z_mat.t().as_col() + u_mat.t().as_col());
@@ -375,7 +376,7 @@ arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, Lis
     gradient.subvec(iter*p+p1, iter*p+p1+p2-1) = as<arma::mat>(H_neg_list[iter]).t() * y_mu_neg; // (p2 by E) * (E by 1)  = (p2 by 1)
     // copy to corresponding positions for each p1 and p2
     // there is NO negative sign here
-    // it is the gradient of log joint likelihood (NOT negative log joint likelihood!)
+    // this is the first-order derivative of the log joint likelihood (NOT negative log joint likelihood!)
   }
 
   return gradient;
@@ -410,7 +411,7 @@ arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List
     // (p1 by E) * (E by E) * (E by p1) = (p1 by p1)
     // (p2 by E) * (E by E) * (E by p2) = (p2 by p2)
     // there is a NEGATIVE sign here
-    // it is the second-order derivative of log joint likelihood (NOT negative log joint likelihood!)
+    // this is the second-order derivative of log joint likelihood (NOT negative log joint likelihood!)
 
   }
 
