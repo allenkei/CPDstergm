@@ -382,10 +382,10 @@ arma::mat cal_M_for_cov(List H_pos_list, List H_neg_list, List y_pos_list, List 
       //sum over edges
 
       // scalar^2 * ( (p1 by 1) * (1 by p1) )
-      M_mat.submat(iter*p, iter*p, iter*p+p1-1, iter*p+p1-1) += y_mu_pos[E_iter] * y_mu_pos[E_iter] * ( H_pos.row(E_iter).t() * H_pos.row(E_iter) );
+      M_mat.submat(iter*p, iter*p, iter*p+p1-1, iter*p+p1-1) += (y_mu_pos[E_iter] * y_mu_pos[E_iter]) * ( H_pos.row(E_iter).t() * H_pos.row(E_iter) );
 
-      // scalar^2 * ( (p1 by 1) * (1 by p1) )
-      M_mat.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) += y_mu_neg[E_iter] * y_mu_neg[E_iter] * ( H_neg.row(E_iter).t() * H_neg.row(E_iter) );
+      // scalar^2 * ( (p2 by 1) * (1 by p2) )
+      M_mat.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) += (y_mu_neg[E_iter] * y_mu_neg[E_iter]) * ( H_neg.row(E_iter).t() * H_neg.row(E_iter) );
 
     }
 
