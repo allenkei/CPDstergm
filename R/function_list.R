@@ -685,7 +685,7 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 #' @examples
 #' library(CPDstergm)
 #'
-cal_SE <- function(y_data, directed, network_stats, node_attr=NA, theta_mat){
+cal_cov <- function(y_data, theta_mat, directed, network_stats, node_attr=NA){
 
   output <- list()
   p1 <- p2 <- length(network_stats); p <- p1+p2
@@ -699,11 +699,11 @@ cal_SE <- function(y_data, directed, network_stats, node_attr=NA, theta_mat){
   n <- dim(y_data[[1]])[1]
   tau <- length(y_data)-1
 
-  score <- cal_Gradient_SE(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
-  hessian <- cal_Hessian_SE(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+  M_mat <- cal_M_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+  B_mat <- cal_B_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
 
-  output$score <- score
-  output$hessian <- hessian
+  output$M_mat <- M_mat
+  output$B_mat <- B_mat
 
   return(output)
 }

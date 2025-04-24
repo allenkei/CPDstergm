@@ -59,9 +59,9 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// cal_Gradient_SE
-arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat, int tau, int p1, int p2);
-RcppExport SEXP _CPDstergm_cal_Gradient_SE(SEXP H_pos_listSEXP, SEXP H_neg_listSEXP, SEXP y_pos_listSEXP, SEXP y_neg_listSEXP, SEXP theta_matSEXP, SEXP tauSEXP, SEXP p1SEXP, SEXP p2SEXP) {
+// cal_M_for_cov
+arma::mat cal_M_for_cov(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat, int tau, int p1, int p2);
+RcppExport SEXP _CPDstergm_cal_M_for_cov(SEXP H_pos_listSEXP, SEXP H_neg_listSEXP, SEXP y_pos_listSEXP, SEXP y_neg_listSEXP, SEXP theta_matSEXP, SEXP tauSEXP, SEXP p1SEXP, SEXP p2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -73,13 +73,13 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type p1(p1SEXP);
     Rcpp::traits::input_parameter< int >::type p2(p2SEXP);
-    rcpp_result_gen = Rcpp::wrap(cal_Gradient_SE(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2));
+    rcpp_result_gen = Rcpp::wrap(cal_M_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2));
     return rcpp_result_gen;
 END_RCPP
 }
-// cal_Hessian_SE
-arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat, int tau, int p1, int p2);
-RcppExport SEXP _CPDstergm_cal_Hessian_SE(SEXP H_pos_listSEXP, SEXP H_neg_listSEXP, SEXP y_pos_listSEXP, SEXP y_neg_listSEXP, SEXP theta_matSEXP, SEXP tauSEXP, SEXP p1SEXP, SEXP p2SEXP) {
+// cal_B_for_cov
+arma::mat cal_B_for_cov(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list, arma::mat theta_mat, int tau, int p1, int p2);
+RcppExport SEXP _CPDstergm_cal_B_for_cov(SEXP H_pos_listSEXP, SEXP H_neg_listSEXP, SEXP y_pos_listSEXP, SEXP y_neg_listSEXP, SEXP theta_matSEXP, SEXP tauSEXP, SEXP p1SEXP, SEXP p2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -91,7 +91,7 @@ BEGIN_RCPP
     Rcpp::traits::input_parameter< int >::type tau(tauSEXP);
     Rcpp::traits::input_parameter< int >::type p1(p1SEXP);
     Rcpp::traits::input_parameter< int >::type p2(p2SEXP);
-    rcpp_result_gen = Rcpp::wrap(cal_Hessian_SE(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2));
+    rcpp_result_gen = Rcpp::wrap(cal_B_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -99,8 +99,8 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_CPDstergm_cal_log_likelihood", (DL_FUNC) &_CPDstergm_cal_log_likelihood, 8},
     {"_CPDstergm_CPD_STERGM_cpp", (DL_FUNC) &_CPDstergm_CPD_STERGM_cpp, 20},
-    {"_CPDstergm_cal_Gradient_SE", (DL_FUNC) &_CPDstergm_cal_Gradient_SE, 8},
-    {"_CPDstergm_cal_Hessian_SE", (DL_FUNC) &_CPDstergm_cal_Hessian_SE, 8},
+    {"_CPDstergm_cal_M_for_cov", (DL_FUNC) &_CPDstergm_cal_M_for_cov, 8},
+    {"_CPDstergm_cal_B_for_cov", (DL_FUNC) &_CPDstergm_cal_B_for_cov, 8},
     {NULL, NULL, 0}
 };
 

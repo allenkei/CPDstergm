@@ -312,9 +312,8 @@ List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, 
     if(verbose){
       Rcout << "        primal_resnorm = " << primal_resnorm << "\n";
       Rcout << "        dual_resnorm = " << dual_resnorm << "\n";
-      Rcout << "        converged = " << converged << "\n";
       Rcout << "        log_lik = " << log_lik << "\n";
-      Rcout << "        tol = " << abs( (log_lik-old_log_lik)/old_log_lik ) << "\n";
+      Rcout << "        ADMM tol = " << abs( (log_lik-old_log_lik)/old_log_lik ) << "\n";
     }
 
 
@@ -346,22 +345,26 @@ List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, 
 
 
 
-////////////////////
-// standard error //
-////////////////////
+/////////////////////////
+// covariance of theta //
+/////////////////////////
 
 // [[Rcpp::export]]
-arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
+arma::mat cal_M_for_cov(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
                           arma::mat theta_mat, int tau, int p1, int p2){
 
   // tau is num_time-1
   // H_pos_list[iter] is (E by p1) and H_neg_list[iter] is (E by p2)
   // theta_mat is (tau by p)
   int p = p1+p2;
+  int E;
   arma::vec mu_pos, mu_neg, y_mu_pos, y_mu_neg; // (E by 1)
-  arma::vec gradient; // (tau p by 1)
+  arma::mat M_mat; // (tau p by tau p)
+  arma::mat H_pos, H_neg;
 
-  gradient.zeros(tau*p); // gradient is (tau p by 1)
+  M_mat.zeros(tau*p,tau*p); // M_mat is (tau p by tau p)
+  H_pos = as<arma::mat>(H_pos_list[0]); // (E by p1)
+  E = H_pos.n_rows;
 
   for(int iter = 0; iter < tau; ++iter){
 
@@ -372,19 +375,31 @@ arma::vec cal_Gradient_SE(List H_pos_list, List H_neg_list, List y_pos_list, Lis
     y_mu_pos = as<arma::vec>(y_pos_list[iter]) - mu_pos; // (E by 1) - (E by 1) = (E by 1)
     y_mu_neg = as<arma::vec>(y_neg_list[iter]) - mu_neg; // (E by 1) - (E by 1) = (E by 1)
 
-    gradient.subvec(iter*p, iter*p+p1-1) = as<arma::mat>(H_pos_list[iter]).t() * y_mu_pos;       // (p1 by E) * (E by 1)  = (p1 by 1)
-    gradient.subvec(iter*p+p1, iter*p+p1+p2-1) = as<arma::mat>(H_neg_list[iter]).t() * y_mu_neg; // (p2 by E) * (E by 1)  = (p2 by 1)
+    H_pos = as<arma::mat>(H_pos_list[iter]); // (E by p1)
+    H_neg = as<arma::mat>(H_neg_list[iter]); // (E by p2)
+
+    for(int E_iter = 0; E_iter < E; ++E_iter){
+      //sum over edges
+
+      // scalar^2 * ( (p1 by 1) * (1 by p1) )
+      M_mat.submat(iter*p, iter*p, iter*p+p1-1, iter*p+p1-1) += y_mu_pos[E_iter] * y_mu_pos[E_iter] * ( H_pos.row(E_iter).t() * H_pos.row(E_iter) );
+
+      // scalar^2 * ( (p1 by 1) * (1 by p1) )
+      M_mat.submat(iter*p+p1, iter*p+p1, iter*p+p1+p2-1, iter*p+p1+p2-1) += y_mu_neg[E_iter] * y_mu_neg[E_iter] * ( H_neg.row(E_iter).t() * H_neg.row(E_iter) );
+
+    }
+
     // copy to corresponding positions for each p1 and p2
     // there is NO negative sign here
     // this is the first-order derivative of the log joint likelihood (NOT negative log joint likelihood!)
   }
 
-  return gradient;
+  return M_mat;
 
 }
 
 // [[Rcpp::export]]
-arma::mat cal_Hessian_SE(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
+arma::mat cal_B_for_cov(List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
                          arma::mat theta_mat, int tau, int p1, int p2){
 
   // tau is num_time-1
