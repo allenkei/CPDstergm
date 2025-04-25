@@ -419,6 +419,12 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   threshold <- mean(t_change) + qnorm( 1-threshold_alpha, lower.tail = T) * sd(t_change)
   theta_change <- t_change
 
+  # MAD version
+  theta_change_MAD <- numeric(tau-1)
+  for(i in 1:(tau-1)){theta_change_MAD[i] <- norm(theta_mat[i+1,]-theta_mat[i,],"2")}
+  med <- median(theta_change); MAD <- median(theta_change_MAD - med)
+  theta_change_MAD <- (theta_change_MAD - med) / MAD
+
   est_CP <- c()
   for(i in 1:(tau-1)){
     if(theta_change[i] > threshold & i > 10 & i < (tau-10)) {
@@ -458,6 +464,7 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   output[[3]] <- theta_change
   output[[4]] <- threshold
   output[[5]] <- log_lik
+  output[[6]] <- theta_change_MAD
 
   return(output)
 }
@@ -656,6 +663,7 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
     output_list$theta_change <- temp[[index_min_BIC]][[2]][[3]] # theta_change
     output_list$threshold    <- temp[[index_min_BIC]][[2]][[4]] # threshold
     output_list$theta_mat    <- temp[[index_min_BIC]][[1]]      # theta_mat
+    output_list$theta_change_MAD <- temp[[index_min_BIC]][[2]][[6]] # theta_change_MAD
   }else{
     message("The algorithm does not converage for any choice of lambda (tuning parameter). An empty list is returned.")
   }
