@@ -673,36 +673,48 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 
 
 
-#' Calculate standard error (SE)
-#' @description This function calculates the standard error
-#' @param y_data The sequence of dynamic networks
-#' @param network_stats The network statistics for both formation and dissolution models. See search.ergmTerms() for a comprehensive list from the library(ergm).
-#'
-#' @return Returns a list of results
-#' @export
-#'
-#' @examples
-#' library(CPDstergm)
-#'
-cal_cov <- function(y_data, theta_mat, directed, network_stats, node_attr=NA){
 
-  output <- list()
-  p1 <- p2 <- length(network_stats); p <- p1+p2
-
-  input_data <- save_H_y_list(y_data, directed, network_stats, node_attr)
-  H_pos_list <- input_data[[1]]
-  H_neg_list <- input_data[[2]]
-  y_pos_list <- input_data[[3]]
-  y_neg_list <- input_data[[4]]
-
-  n <- dim(y_data[[1]])[1]
-  tau <- length(y_data)-1
-
-  M_mat <- cal_M_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
-  B_mat <- cal_B_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
-
-  output$M_mat <- M_mat
-  output$B_mat <- B_mat
-
-  return(output)
-}
+# cal_cov <- function(y_data, theta_mat, directed, network_stats, node_attr=NA){
+#
+#   output <- list()
+#   p1 <- p2 <- length(network_stats); p <- p1+p2
+#
+#   input_data <- save_H_y_list(y_data, directed, network_stats, node_attr)
+#   H_pos_list <- input_data[[1]]
+#   H_neg_list <- input_data[[2]]
+#   y_pos_list <- input_data[[3]]
+#   y_neg_list <- input_data[[4]]
+#
+#   n <- dim(y_data[[1]])[1]
+#   tau <- length(y_data)-1
+#
+#   M_mat <- cal_M_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+#   B_mat <- cal_B_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
+#
+#   A_inv <- ginv(-output$B_mat)
+#   cov_theta <- A_inv %*% output$M_mat %*% A_inv
+#
+#   # #Wald Statistics for Hypothesis Testing
+#   # T <- nrow(theta_mat)
+#   # p <- ncol(theta_mat)
+#   # W <- numeric(T - 1)
+#   #
+#   # for (t in 2:T) {
+#   #   idx_t <- ((t-1)*p + 1):(t*p)
+#   #   idx_t_prev <- ((t-2)*p + 1):((t-1)*p)
+#   #
+#   #   cov_tt <- cov_theta[idx_t, idx_t]
+#   #   cov_t_prev <- cov_theta[idx_t_prev, idx_t_prev]
+#   #   cov_diff <- cov_tt + cov_t_prev
+#   #
+#   #   delta_theta <- theta_mat[t, ] - theta_mat[t-1, ] # t(delta_theta) %*% delta_theta
+#   #   W[t-1] <- t(delta_theta) %*% ginv(cov_diff) %*% delta_theta
+#   # }
+#
+#   # #CP Detection
+#   # p_values <- 1 - pchisq(W, df = p)
+#   # alpha <- 0.1
+#   # change_points <- which(p_values < alpha)
+#
+#   return(cov_theta)
+# }
