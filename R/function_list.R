@@ -419,13 +419,6 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   threshold <- mean(t_change) + qnorm( 1-threshold_alpha, lower.tail = T) * sd(t_change)
   theta_change <- t_change
 
-  # MAD version
-  theta_change_MAD <- numeric(tau-1)
-  for(i in 1:(tau-1)){theta_change_MAD[i] <- norm(theta_mat[i+1,]-theta_mat[i,],"2")}
-  med <- median(theta_change_MAD);
-  MAD <- median(abs(theta_change_MAD - med))
-  theta_change_MAD <- (theta_change_MAD - med) / (MAD + 1e-8)
-
   est_CP <- c()
   for(i in 1:(tau-1)){
     if(theta_change[i] > threshold & i > 10 & i < (tau-10)) {
@@ -465,7 +458,6 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   output[[3]] <- theta_change
   output[[4]] <- threshold
   output[[5]] <- log_lik
-  output[[6]] <- theta_change_MAD
 
   return(output)
 }
@@ -619,7 +611,7 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
                        list_of_lambda=10^c(-2:7), ADMM_iteration=200, theta_iter=20, z_iter=20,
                        theta_tol=1e-3, ADMM_tol=1e-7, threshold_alpha=0.1, verbose=FALSE){
   temp <- list()
-  BIC_vec <- log_lik_vec <- rep(NA, length(list_of_lambda))
+  BIC_vec <- rep(NA, length(list_of_lambda))
   p1 <- p2 <- length(network_stats); p <- p1+p2
 
   input_data <- save_H_y_list(y_data, directed, network_stats, node_attr)
@@ -649,7 +641,6 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
       temp[[lambda_index]][[1]] <- output[[1]] # theta_mat
       temp[[lambda_index]][[2]] <- result # list (est_CP, BIC, theta_change, data-driven threshold, log_lik)
       BIC_vec[lambda_index] <- result[[2]] # BIC
-      log_lik_vec[lambda_index] <- result[[5]] # log_lik
     }
 
   }
@@ -664,7 +655,6 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
     output_list$theta_change <- temp[[index_min_BIC]][[2]][[3]] # theta_change
     output_list$threshold    <- temp[[index_min_BIC]][[2]][[4]] # threshold
     output_list$theta_mat    <- temp[[index_min_BIC]][[1]]      # theta_mat
-    output_list$theta_change_MAD <- temp[[index_min_BIC]][[2]][[6]] # theta_change_MAD
   }else{
     message("The algorithm does not converage for any choice of lambda (tuning parameter). An empty list is returned.")
   }
