@@ -422,7 +422,8 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
   # MAD version
   theta_change_MAD <- numeric(tau-1)
   for(i in 1:(tau-1)){theta_change_MAD[i] <- norm(theta_mat[i+1,]-theta_mat[i,],"2")}
-  med <- median(theta_change); MAD <- median(theta_change_MAD - med)
+  med <- median(theta_change_MAD);
+  MAD <- median(abs(theta_change_MAD - med))
   theta_change_MAD <- (theta_change_MAD - med) / MAD
 
   est_CP <- c()
