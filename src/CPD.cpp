@@ -273,7 +273,8 @@ arma::mat z_learning(int learning_iter, arma::mat theta_mat, arma::mat z_mat, ar
 // [[Rcpp::export]]
 List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, List H_neg_list, List y_pos_list, List y_neg_list,
                     arma::mat theta_mat, arma::mat z_mat, arma::mat u_mat, arma::mat X_mat, arma::vec d_vec,
-                    double alpha, int tau, int p1, int p2, double lambda, double theta_tol, double ADMM_tol, bool verbose){
+                    double alpha, int tau, int p1, int p2, double lambda, double theta_tol, double ADMM_tol,
+                    bool update_alpha, bool verbose){
 
   Rcpp::Rcout.precision(15);
   int p = p1+p2;
@@ -316,18 +317,18 @@ List CPD_STERGM_cpp(int ADMM_iter, int theta_iter, int z_iter, List H_pos_list, 
       Rcout << "        ADMM tol = " << abs( (log_lik-old_log_lik)/old_log_lik ) << "\n";
     }
 
-
     if( abs( (log_lik-old_log_lik)/old_log_lik ) < ADMM_tol ){s="Save";break;}
 
-
-    if(primal_resnorm > dual_resnorm * 10){
-      alpha *= 2;
-      u_mat /= 2;
-      if(verbose){Rcout << "        ---alpha is increased to " << alpha << "\n";}
-    }else if(dual_resnorm > primal_resnorm * 10){
-      alpha /= 2;
-      u_mat *= 2;
-      if(verbose){Rcout << "        ---alpha is decreased to " << alpha << "\n";}
+    if(update_alpha){
+      if(primal_resnorm > dual_resnorm * 10){
+        alpha *= 2;
+        u_mat /= 2;
+        if(verbose){Rcout << "        ---alpha is increased to " << alpha << "\n";}
+      }else if(dual_resnorm > primal_resnorm * 10){
+        alpha /= 2;
+        u_mat *= 2;
+        if(verbose){Rcout << "        ---alpha is decreased to " << alpha << "\n";}
+      }
     }
 
     old_log_lik = log_lik;

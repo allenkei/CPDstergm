@@ -485,6 +485,7 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
 #' @param theta_tol The tolerance for \eqn{\bm{\theta}} stopping criteria.
 #' @param ADMM_tol The tolerance for ADMM stopping criteria.
 #' @param true_CP The true change points.
+#' @param update_alpha If it is TRUE, the alpha is updated with a schedule.
 #' @param verbose If it is TRUE, the information at each ADMM iteration is printed.
 #'
 #' @return Returns the four evaluation metrics for each sequence of dynamic networks. The four evaluation metrics are (1) absolute error \eqn{|\hat{K}-K|}, (2) one-sided Hausdorff distance \eqn{d(\hat{\mathcal{C}}|\mathcal{C})}, (3) one-sided Hausdorff distance \eqn{d(\mathcal{C}|\hat{\mathcal{C}})}, and (4) coverage metric \eqn{C(\mathcal{G},\mathcal{G'})}.
@@ -497,7 +498,7 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
 #' result <- CPD_STERGM_list(SBM_list, directed=TRUE, network_stats, list_of_lambda=10^c(4:7))
 CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
                             list_of_lambda=10^c(-2:7), ADMM_iteration=200, theta_iter=20, z_iter=20,
-                            theta_tol=1e-3, ADMM_tol=1e-7, true_CP=c(26, 51, 76), verbose=FALSE){
+                            theta_tol=1e-3, ADMM_tol=1e-7, true_CP=c(26, 51, 76), update_alpha=TRUE, verbose=FALSE){
   num_nets <- length(data_list)
   temp <- list()
   BIC_table <- matrix(NA, nrow=num_nets, ncol=length(list_of_lambda))
@@ -526,7 +527,8 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 
       lambda <- list_of_lambda[lambda_index]
       output <- CPD_STERGM_cpp(ADMM_iteration, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list,
-                               theta_mat, z_mat, u_mat, X_mat, d_vec, alpha=10, tau, p1, p2, lambda, theta_tol, ADMM_tol, verbose)
+                               theta_mat, z_mat, u_mat, X_mat, d_vec, alpha=10, tau, p1, p2, lambda, theta_tol, ADMM_tol,
+                               update_alpha, verbose)
 
       if(output[[4]] == "Save"){
         result <- Evaluation_ADMM_list(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
@@ -577,6 +579,7 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 #' @param theta_tol The tolerance for \eqn{\bm{\theta}} stopping criteria.
 #' @param ADMM_tol The tolerance for ADMM stopping criteria.
 #' @param threshold_alpha The alpha level for the data-driven threshold to declare the change points
+#' @param update_alpha If it is TRUE, the alpha is updated with a schedule.
 #' @param verbose If it is TRUE, the information at each ADMM iteration is printed.
 #'
 #' @return Returns a list of results including detected change points, selected lambda, BIC value, log-likelihood, sequential parameter change after standardization \eqn{\Delta \hat{\bm{\zeta}}}, data-driven threshold to declare the change points, and the learned parameters \eqn{\bm{\theta}}.
@@ -609,7 +612,7 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 #' seq_date[result[[1]]]
 CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
                        list_of_lambda=10^c(-2:7), ADMM_iteration=200, theta_iter=20, z_iter=20,
-                       theta_tol=1e-3, ADMM_tol=1e-7, threshold_alpha=0.1, verbose=FALSE){
+                       theta_tol=1e-3, ADMM_tol=1e-7, threshold_alpha=0.1, update_alpha=TRUE, verbose=FALSE){
   temp <- list()
   BIC_vec <- rep(NA, length(list_of_lambda))
   p1 <- p2 <- length(network_stats); p <- p1+p2
@@ -632,7 +635,8 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 
     lambda <- list_of_lambda[lambda_index]
     output <- CPD_STERGM_cpp(ADMM_iteration, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list,
-                             theta_mat, z_mat, u_mat, X_mat, d_vec, alpha=10, tau, p1, p2, lambda, theta_tol, ADMM_tol, verbose)
+                             theta_mat, z_mat, u_mat, X_mat, d_vec, alpha=10, tau, p1, p2, lambda, theta_tol, ADMM_tol,
+                             update_alpha, verbose)
 
     if(output[[4]] == "Save"){
       result <- Evaluation_ADMM(H_pos_list, H_neg_list, y_pos_list, y_neg_list,

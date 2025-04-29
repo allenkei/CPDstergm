@@ -5,8 +5,8 @@ cal_log_likelihood <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list, t
     .Call(`_CPDstergm_cal_log_likelihood`, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
 }
 
-CPD_STERGM_cpp <- function(ADMM_iter, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, z_mat, u_mat, X_mat, d_vec, alpha, tau, p1, p2, lambda, theta_tol, ADMM_tol, verbose) {
-    .Call(`_CPDstergm_CPD_STERGM_cpp`, ADMM_iter, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, z_mat, u_mat, X_mat, d_vec, alpha, tau, p1, p2, lambda, theta_tol, ADMM_tol, verbose)
+CPD_STERGM_cpp <- function(ADMM_iter, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, z_mat, u_mat, X_mat, d_vec, alpha, tau, p1, p2, lambda, theta_tol, ADMM_tol, update_alpha, verbose) {
+    .Call(`_CPDstergm_CPD_STERGM_cpp`, ADMM_iter, theta_iter, z_iter, H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, z_mat, u_mat, X_mat, d_vec, alpha, tau, p1, p2, lambda, theta_tol, ADMM_tol, update_alpha, verbose)
 }
 
 cal_M_for_cov <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2) {

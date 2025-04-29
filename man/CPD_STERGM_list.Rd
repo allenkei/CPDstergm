@@ -16,6 +16,7 @@ CPD_STERGM_list(
   theta_tol = 0.001,
   ADMM_tol = 1e-07,
   true_CP = c(26, 51, 76),
+  update_alpha = TRUE,
   verbose = FALSE
 )
 }
@@ -41,6 +42,8 @@ CPD_STERGM_list(
 \item{ADMM_tol}{The tolerance for ADMM stopping criteria.}
 
 \item{true_CP}{The true change points.}
+
+\item{update_alpha}{If it is TRUE, the alpha is updated with a schedule.}
 
 \item{verbose}{If it is TRUE, the information at each ADMM iteration is printed.}
 }

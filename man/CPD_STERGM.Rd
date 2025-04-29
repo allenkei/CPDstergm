@@ -16,6 +16,7 @@ CPD_STERGM(
   theta_tol = 0.001,
   ADMM_tol = 1e-07,
   threshold_alpha = 0.1,
+  update_alpha = TRUE,
   verbose = FALSE
 )
 }
@@ -41,6 +42,8 @@ CPD_STERGM(
 \item{ADMM_tol}{The tolerance for ADMM stopping criteria.}
 
 \item{threshold_alpha}{The alpha level for the data-driven threshold to declare the change points}
+
+\item{update_alpha}{If it is TRUE, the alpha is updated with a schedule.}
 
 \item{verbose}{If it is TRUE, the information at each ADMM iteration is printed.}
 }
