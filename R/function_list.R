@@ -189,6 +189,89 @@ sim_STERGM_list <- function(num_seq=1, n=50, network_stats,
 
 
 
+#' Simulation of dynamic networks from the Random Dot Product Graph Model
+#' @description This function simulates multiple sequences of dynamic networks, from the Random Dot Product Graph Model (RDPGM).
+#' @param num_seq The number of sequences of dynamic networks.
+#' @param n The number of node.
+#' @param rho The correlation coefficient between consecutive time points for latent position.
+#' @param d The latent dimension.
+#'
+#' @return Returns a list of multiple sequences of dynamic networks.
+#' @export
+#'
+#' @examples
+#' set.seed(1)
+#' RDPG_list <- sim_RDPG_list(num_seq = 1, n = 50, rho = 0.5, d = 10)
+sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.5, d = 10) {
+
+  change_points <- c(26, 51, 76)
+  lower_bound <- c(0/16, 1/16, 0/16, 1/16)
+  upper_bound <- c(1/16, 2/16, 1/16, 2/16)
+  num_time <- 100
+  sigma <- 1
+  output <- list()
+
+  generate_latent <- function(n, d) {
+    latent <- matrix(rnorm(n * d, mean = 1, sd = 1), n, d)
+    return(latent)
+  }
+
+  segments <- c(1, change_points, num_time + 1)
+  num_segments <- length(segments) - 1
+
+  for (rep_iter in 1:num_seq) {
+
+    dynamic_adj <- list()
+
+    Xt <- generate_latent(n, d)
+    Yt <- generate_latent(n, d)
+
+    for (s in 1:num_segments) {
+      t_start <- segments[s]
+      t_end <- segments[s + 1] - 1
+
+      # Fixed weight matrix within the segment
+      W <- matrix(runif(d * d, lower_bound[s], upper_bound[s]), d, d)
+
+      for (t in t_start:t_end) {
+
+        # Temporal evolution of X, Y
+        if (t > 1) {
+          noise_X <- matrix(rnorm(n * d, 0, sigma), n, d)
+          Xt <- rho * Xt + (1 - rho) * noise_X
+
+          noise_Y <- matrix(rnorm(n * d, 0, sigma), n, d)
+          Yt <- rho * Yt + (1 - rho) * noise_Y
+        }
+
+        Xt <- Xt / (sqrt(rowSums(Xt^2)) + 1e-8)
+        Yt <- Yt / (sqrt(rowSums(Yt^2)) + 1e-8)
+
+        P <- Xt %*% W %*% t(Yt)
+        P[P < 0] <- 1e-8
+        P[P > 1] <- 1 - 1e-8
+
+        A <- matrix(rbinom(n * n, size = 1, prob = as.vector(P)), n, n)
+        diag(A) <- 0
+        dynamic_adj[[t]] <- A
+      }
+    }
+
+    output[[rep_iter]] <- dynamic_adj
+  }
+
+  return(output)
+}
+
+
+
+
+
+
+
+
+
+
 #' Generation of input data from dynamic networks
 #' @description This function generates the change statistics with formation and dissolution networks, and save them as input data.
 #' @param y_data A sequence of dynamic networks.
@@ -669,56 +752,3 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 
 
 
-
-
-
-
-
-
-
-
-
-# cal_cov <- function(y_data, theta_mat, directed, network_stats, node_attr=NA){
-#
-#   output <- list()
-#   p1 <- p2 <- length(network_stats); p <- p1+p2
-#
-#   input_data <- save_H_y_list(y_data, directed, network_stats, node_attr)
-#   H_pos_list <- input_data[[1]]
-#   H_neg_list <- input_data[[2]]
-#   y_pos_list <- input_data[[3]]
-#   y_neg_list <- input_data[[4]]
-#
-#   n <- dim(y_data[[1]])[1]
-#   tau <- length(y_data)-1
-#
-#   M_mat <- cal_M_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
-#   B_mat <- cal_B_for_cov(H_pos_list, H_neg_list, y_pos_list, y_neg_list, theta_mat, tau, p1, p2)
-#
-#   A_inv <- ginv(-output$B_mat)
-#   cov_theta <- A_inv %*% output$M_mat %*% A_inv
-#
-#   # #Wald Statistics for Hypothesis Testing
-#   # T <- nrow(theta_mat)
-#   # p <- ncol(theta_mat)
-#   # W <- numeric(T - 1)
-#   #
-#   # for (t in 2:T) {
-#   #   idx_t <- ((t-1)*p + 1):(t*p)
-#   #   idx_t_prev <- ((t-2)*p + 1):((t-1)*p)
-#   #
-#   #   cov_tt <- cov_theta[idx_t, idx_t]
-#   #   cov_t_prev <- cov_theta[idx_t_prev, idx_t_prev]
-#   #   cov_diff <- cov_tt + cov_t_prev
-#   #
-#   #   delta_theta <- theta_mat[t, ] - theta_mat[t-1, ] # t(delta_theta) %*% delta_theta
-#   #   W[t-1] <- t(delta_theta) %*% ginv(cov_diff) %*% delta_theta
-#   # }
-#
-#   # #CP Detection
-#   # p_values <- 1 - pchisq(W, df = p)
-#   # alpha <- 0.1
-#   # change_points <- which(p_values < alpha)
-#
-#   return(cov_theta)
-# }
