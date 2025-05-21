@@ -23,5 +23,5 @@ This function simulates multiple sequences of dynamic networks, from the Random 
 }
 \examples{
 set.seed(1)
-RDPG_list <- sim_RDPG_list(num_seq = 1, n = 50, rho = 0.5, d = 10)
+RDPG_list <- sim_RDPG_list(num_seq = 1, n = 50, rho = 0.9, d = 10)
 }

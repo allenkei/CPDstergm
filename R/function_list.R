@@ -201,7 +201,7 @@ sim_STERGM_list <- function(num_seq=1, n=50, network_stats,
 #'
 #' @examples
 #' set.seed(1)
-#' RDPG_list <- sim_RDPG_list(num_seq = 1, n = 50, rho = 0.5, d = 10)
+#' RDPG_list <- sim_RDPG_list(num_seq = 1, n = 50, rho = 0.9, d = 10)
 sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.9, d = 10) {
 
   change_points <- c(26, 51, 76)
