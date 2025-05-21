@@ -202,11 +202,11 @@ sim_STERGM_list <- function(num_seq=1, n=50, network_stats,
 #' @examples
 #' set.seed(1)
 #' RDPG_list <- sim_RDPG_list(num_seq = 1, n = 50, rho = 0.5, d = 10)
-sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.5, d = 10) {
+sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.9, d = 10) {
 
   change_points <- c(26, 51, 76)
-  lower_bound <- c(0/16, 1/16, 0/16, 1/16)
-  upper_bound <- c(1/16, 2/16, 1/16, 2/16)
+  lower_bound <- c(0, 1, 0, 1) / 16
+  upper_bound <- c(1, 2, 1, 2) / 16
   num_time <- 100
   sigma <- 1
   output <- list()
@@ -230,12 +230,10 @@ sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.5, d = 10) {
       t_start <- segments[s]
       t_end <- segments[s + 1] - 1
 
-      # Fixed weight matrix within the segment
       W <- matrix(runif(d * d, lower_bound[s], upper_bound[s]), d, d)
 
       for (t in t_start:t_end) {
 
-        # Temporal evolution of X, Y
         if (t > 1) {
           noise_X <- matrix(rnorm(n * d, 0, sigma), n, d)
           Xt <- rho * Xt + (1 - rho) * noise_X
@@ -244,12 +242,12 @@ sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.5, d = 10) {
           Yt <- rho * Yt + (1 - rho) * noise_Y
         }
 
-        Xt <- Xt / (sqrt(rowSums(Xt^2)) + 1e-8)
-        Yt <- Yt / (sqrt(rowSums(Yt^2)) + 1e-8)
+        Xt <- Xt / (sqrt(rowSums(Xt^2)) + 1e-5)
+        Yt <- Yt / (sqrt(rowSums(Yt^2)) + 1e-5)
 
         P <- Xt %*% W %*% t(Yt)
-        P[P < 0] <- 1e-8
-        P[P > 1] <- 1 - 1e-8
+        P[P < 0] <- 1e-5
+        P[P > 1] <- 1 - 1e-5
 
         A <- matrix(rbinom(n * n, size = 1, prob = as.vector(P)), n, n)
         diag(A) <- 0
@@ -262,6 +260,7 @@ sim_RDPG_list <- function(num_seq = 1, n = 50, rho = 0.5, d = 10) {
 
   return(output)
 }
+
 
 
 

@@ -4,7 +4,7 @@
 \alias{sim_RDPG_list}
 \title{Simulation of dynamic networks from the Random Dot Product Graph Model}
 \usage{
-sim_RDPG_list(num_seq = 1, n = 50, rho = 0.5, d = 10)
+sim_RDPG_list(num_seq = 1, n = 50, rho = 0.9, d = 10)
 }
 \arguments{
 \item{num_seq}{The number of sequences of dynamic networks.}
