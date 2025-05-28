@@ -146,7 +146,7 @@ sim_STERGM_list <- function(num_seq=1, n=50, network_stats,
     g0<-network.initialize(num_nodes, directed=T) # empty
     g1<-san(g0~edges,target.stats=y1_stats, verbose=TRUE)
     if(any(!is.na(node_attr))){
-      network::set.vertex.attribute(g1, "Gender", node_attr)
+      network::set.vertex.attribute(g1, "node_attr", node_attr)
     }
     ginit <- g1
 
@@ -306,8 +306,8 @@ save_H_y_list <- function(y_data, directed, network_stats, node_attr=NA){
 
     # assign nodal attributes to network object
     if(any(!is.na(node_attr))){
-      network::set.vertex.attribute(y_pos, "Gender", node_attr)
-      network::set.vertex.attribute(y_neg, "Gender", node_attr)
+      network::set.vertex.attribute(y_pos, "node_attr", node_attr)
+      network::set.vertex.attribute(y_neg, "node_attr", node_attr)
     }
 
     # calculate change statistics
@@ -660,7 +660,7 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 #' @param z_iter The learning iteration for \eqn{\bm{z}}.
 #' @param theta_tol The tolerance for \eqn{\bm{\theta}} stopping criteria.
 #' @param ADMM_tol The tolerance for ADMM stopping criteria.
-#' @param threshold_alpha The alpha level for the data-driven threshold to declare the change points
+#' @param threshold_alpha The alpha level for the data-driven threshold to declare the change points.
 #' @param update_alpha If it is TRUE, the alpha is updated with a schedule.
 #' @param verbose If it is TRUE, the information at each ADMM iteration is printed.
 #'
