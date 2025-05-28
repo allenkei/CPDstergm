@@ -41,7 +41,7 @@ CPD_STERGM(
 
 \item{ADMM_tol}{The tolerance for ADMM stopping criteria.}
 
-\item{threshold_alpha}{The alpha level for the data-driven threshold to declare the change points}
+\item{threshold_alpha}{The alpha level for the data-driven threshold to declare the change points.}
 
 \item{update_alpha}{If it is TRUE, the alpha is updated with a schedule.}
 
