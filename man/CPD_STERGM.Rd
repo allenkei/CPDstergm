@@ -9,6 +9,7 @@ CPD_STERGM(
   directed,
   network_stats,
   node_attr = NA,
+  d_weight = TRUE,
   list_of_lambda = 10^c(-2:7),
   ADMM_iteration = 200,
   theta_iter = 20,

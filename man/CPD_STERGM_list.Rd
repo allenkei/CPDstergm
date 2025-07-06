@@ -9,6 +9,7 @@ CPD_STERGM_list(
   directed,
   network_stats,
   node_attr = NA,
+  d_weight = TRUE,
   list_of_lambda = 10^c(-2:7),
   ADMM_iteration = 200,
   theta_iter = 20,
@@ -28,6 +29,8 @@ CPD_STERGM_list(
 \item{network_stats}{The network statistics for both formation and dissolution models. See search.ergmTerms() for a comprehensive list from the library(ergm).}
 
 \item{node_attr}{The nodal attributes.}
+
+\item{d_weight}{If it is TRUE, use position dependent weight.}
 
 \item{list_of_lambda}{The list of tuning parameters \eqn{\lambda}.}
 
@@ -57,5 +60,5 @@ This function detects the change points for each sequence of dynamic networks, a
 set.seed(1)
 SBM_list <- sim_SBM_list(num_seq=5, n=50, rho=0)
 network_stats=c("edges", "mutual")
-result <- CPD_STERGM_list(SBM_list, directed=TRUE, network_stats, list_of_lambda=10^c(4:7))
+result <- CPD_STERGM_list(SBM_list, directed=TRUE, network_stats, list_of_lambda=10^c(0:4))
 }

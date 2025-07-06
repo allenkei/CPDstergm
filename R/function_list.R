@@ -560,6 +560,7 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
 #' @param network_stats The network statistics for both formation and dissolution models. See search.ergmTerms() for a comprehensive list from the library(ergm).
 #' @param directed Whether the networks are directed or not.
 #' @param node_attr The nodal attributes.
+#' @param d_weight If it is TRUE, use position dependent weight.
 #' @param list_of_lambda The list of tuning parameters \eqn{\lambda}.
 #' @param ADMM_iteration The learning iteration for ADMM.
 #' @param theta_iter The learning iteration for \eqn{\bm{\theta}}.
@@ -577,8 +578,8 @@ Evaluation_ADMM <- function(H_pos_list, H_neg_list, y_pos_list, y_neg_list,
 #' set.seed(1)
 #' SBM_list <- sim_SBM_list(num_seq=5, n=50, rho=0)
 #' network_stats=c("edges", "mutual")
-#' result <- CPD_STERGM_list(SBM_list, directed=TRUE, network_stats, list_of_lambda=10^c(4:7))
-CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
+#' result <- CPD_STERGM_list(SBM_list, directed=TRUE, network_stats, list_of_lambda=10^c(0:4))
+CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA, d_weight=TRUE,
                             list_of_lambda=10^c(-2:7), ADMM_iteration=200, theta_iter=20, z_iter=20,
                             theta_tol=1e-3, ADMM_tol=1e-7, true_CP=c(26, 51, 76), update_alpha=TRUE, verbose=FALSE){
   num_nets <- length(data_list)
@@ -599,8 +600,14 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 
     n <- dim(y_data[[1]])[1]
     tau <- length(y_data)-1
-    d_vec <- numeric(tau-1) # fixed
-    for(i in 1:(tau-1)){ d_vec[i] = sqrt( tau/ (i*(tau-i)) ) }
+
+    if(d_weight){
+      d_vec <- numeric(tau-1)
+      for(i in 1:(tau-1)){ d_vec[i] = sqrt( tau/ (i*(tau-i)) ) }
+    }else{
+      d_vec <- rep(1, tau-1)
+    }
+
     X_mat <- matrix(0, nrow = tau, ncol = tau-1) # fixed
     for(i in 1:tau){ for(j in 1:(tau-1)){ if(i > j) X_mat[i,j] <- d_vec[j] } }
     theta_mat <- z_mat <- u_mat <- matrix(0, nrow=tau, ncol=p)
@@ -692,7 +699,7 @@ CPD_STERGM_list <- function(data_list, directed, network_stats, node_attr=NA,
 #'
 #' seq_date <- rownames(market[start:end,])
 #' seq_date[result[[1]]]
-CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
+CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA, d_weight=TRUE,
                        list_of_lambda=10^c(-2:7), ADMM_iteration=200, theta_iter=20, z_iter=20,
                        theta_tol=1e-3, ADMM_tol=1e-7, threshold_alpha=0.1, update_alpha=TRUE, verbose=FALSE){
   temp <- list()
@@ -707,8 +714,14 @@ CPD_STERGM <- function(y_data, directed, network_stats, node_attr=NA,
 
   n <- dim(y_data[[1]])[1]
   tau <- length(y_data)-1
-  d_vec <- numeric(tau-1) # fixed
-  for(i in 1:(tau-1)){ d_vec[i] = sqrt( tau/ (i*(tau-i)) ) }
+
+  if(d_weight){
+    d_vec <- numeric(tau-1)
+    for(i in 1:(tau-1)){ d_vec[i] = sqrt( tau/ (i*(tau-i)) ) }
+  }else{
+    d_vec <- rep(1, tau-1)
+  }
+
   X_mat <- matrix(0, nrow = tau, ncol = tau-1) # fixed
   for(i in 1:tau){ for(j in 1:(tau-1)){ if(i > j) X_mat[i,j] <- d_vec[j] } }
   theta_mat <- z_mat <- u_mat <- matrix(0, nrow=tau, ncol=p)
